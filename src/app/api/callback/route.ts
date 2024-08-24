@@ -16,6 +16,4 @@ export async function POST(request: NextRequest) {
     catch (err) { 
         console.log(err) 
     }
-
-    return new Response("Hello, Next.js!");
 }
