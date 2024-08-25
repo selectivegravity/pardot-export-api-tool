@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Pardot Export Exporter",
+  title: "Pardot Data Exporter",
   description: "Developed by Abhishek",
 };
 
