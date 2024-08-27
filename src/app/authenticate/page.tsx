@@ -1,10 +1,12 @@
 "use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
 // import ClipboardComponent from "../clipboard/page";
 
 export default function Authenticate() {
+    const router = useRouter();
     const [hasCode, setHasCode] = useState(false);
     const searchParams = useSearchParams();
     const [isCopied, setIsCopied] = useState(false);
@@ -180,6 +182,17 @@ export default function Authenticate() {
                 </div>
                 <p id="outlined_error_help" className="mt-2 text-xs text-red-600 dark:text-red-400">{errorMessage}</p>    
             </div>}
+
+            {accessToken!=="Please generate an access token and copy it." && (
+                <div className="flex space-x-8">
+                    <button
+                        className="p-2 text-black border border-gray-300 hover:border-gray-600 bg-blue-100 hover:bg-gray-300 rounded-lg focus:outline-none focus:border-gray-600 btn btn-primary"
+                        onClick={()=>router.push('/exportData')} 
+                    >
+                        Extract Pardot Data
+                    </button>
+                </div>
+            )}
 
             {hasCode ? (
                 <div className="flex space-x-8">
