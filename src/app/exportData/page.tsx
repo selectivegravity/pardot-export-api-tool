@@ -1,5 +1,6 @@
 "use client";
 
+import axios from 'axios';
 import { useState } from 'react';
 
 export default function JsonInputForm() {
@@ -49,26 +50,20 @@ export default function JsonInputForm() {
 
     const handleSendRequest = async () => {
         if (!jsonOutput) {
-            setError('Generate JSON before sending a request.');
-            return;
+          setError('Generate JSON before sending a request.');
+          return;
         }
-
+      
         try {
-            // Replace with your actual API endpoint
-            const response = await fetch('/api/endpoint', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: jsonOutput,
-            });
-
-            const result = await response.json();
-            setResponse(JSON.stringify(result, null, 2));
-        } catch (error) {
-            setError('Failed to send request.');
+          const response = await axios.post('/api/sendRequest', { jsonOutput });
+          const result = response.data;
+          setResponse(JSON.stringify(result, null, 2));
+        } catch (error:any) {
+          setError('Failed to send request.');
+          setResponse(error.message);
+          console.error(error); // Log the error for debugging
         }
-    };
+      };      
 
     const handleGetStatus = async () => {
         // Add your logic to get status here
