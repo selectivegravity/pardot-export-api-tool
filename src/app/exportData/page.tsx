@@ -114,9 +114,9 @@ export default function JsonInputForm() {
         } catch (error:any) {
           console.error('Error fetching all jobs:', error); // Log the full error object
           if (error.response && error.response.data) {
-            setResponse(`Failed to fetch jobs: ${JSON.stringify(error.response.data, null, 2)}`);
+            setResponse(`Failed to fetch jobs:\n\n ${JSON.stringify(error.response.data, null, 2)}`);
           } else if (error.message) {
-            setResponse(`An unexpected error occurred: ${error.message}`);
+            setResponse(`An unexpected error occurred:\n\n ${error.message}`);
           } else {
             setResponse('Failed to fetch jobs, Please try again.');
           }
