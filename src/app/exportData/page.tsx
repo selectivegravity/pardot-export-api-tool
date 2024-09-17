@@ -1,6 +1,7 @@
 "use client";
 
 import axios from 'axios';
+import { cookies } from 'next/headers';
 import { useState } from 'react';
 
 export default function JsonInputForm() {
@@ -64,9 +65,9 @@ export default function JsonInputForm() {
             }
         } catch (error: any) {
             if (error.response && error.response.data && error.response.data.error) {
-                setResponse(`Error from Pardot: ${error.response.data.error}`);
+                setResponse(`Error from Pardot:\n\n ${error.response.data.error}`);
             } else if (error.message) {
-                setResponse(`An unexpected error occurred: ${error.message}`);
+                setResponse(`An unexpected error occurred:\n\n ${error.message}`);
             } else {
                 setResponse('Failed to send request. Please try again.');
             }
@@ -77,12 +78,52 @@ export default function JsonInputForm() {
 
 
     const handleGetStatus = async () => {
-        // Add your logic to get status here
+        setError('');
+        setResponse('');
+        try {
+            const response = await axios.get('/api/getJobStatus');
+            const result = response.data;
+            if (result.error) {
+                setResponse(`Error: ${result.error}`);
+            } else {
+                setResponse(JSON.stringify(result, null, 2));
+            }
+        } catch (error: any) {
+            if (error.response && error.response.data && error.response.data.error) {
+                setResponse(`Failed to fetch job status:\n\n ${error.response.data.error}`);
+            } else if (error.message) {
+                setResponse(`An unexpected error occurred while fetching job status:\n\n ${error.message}`);
+            } else {
+                setResponse('Failed to fetch job status, Please try again.');
+            }
+            setError(error.message);
+            console.error("Error log:", error.response?.data?.error || error.message);
+        }
     };
 
+
     const handleGetAllStatus = async () => {
-        // Add your logic to get all statuses here
-    };
+        try {
+          const response = await axios.get('/api/getAllJobStatuses');
+          const result = response.data;
+          if (result.error) {
+            setResponse(`Error: ${result.error}`);
+          } else {
+            setResponse(JSON.stringify(result.data, null, 2));
+          }
+        } catch (error:any) {
+          console.error('Error fetching all jobs:', error); // Log the full error object
+          if (error.response && error.response.data) {
+            setResponse(`Failed to fetch jobs: ${JSON.stringify(error.response.data, null, 2)}`);
+          } else if (error.message) {
+            setResponse(`An unexpected error occurred: ${error.message}`);
+          } else {
+            setResponse('Failed to fetch jobs, Please try again.');
+          }
+        }
+      };
+      
+
 
     return (
         <div className="flex min-h-screen">
