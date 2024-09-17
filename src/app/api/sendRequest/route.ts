@@ -30,8 +30,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ data: response.data }, { status: 200 });
-  } catch (error) {
+  } catch (error:any) {
     console.error('Error making request to Pardot:', error);
-    return NextResponse.json({ error: 'Failed to send request to Pardot.' }, { status: 500 });
+    const errorMessage = error.response?.data || 'Failed to send request to Pardot.';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -49,21 +49,32 @@ export default function JsonInputForm() {
     };
 
     const handleSendRequest = async () => {
+        setError('');
+        setResponse('');
+
         if (!jsonOutput) {
-          setError('Generate JSON before sending a request.');
-          return;
+            setError('Please generate the JSON body before sending the request.');
+            return;
         }
-      
+
         try {
-          const response = await axios.post('/api/sendRequest', { jsonOutput });
-          const result = response.data;
-          setResponse(JSON.stringify(result, null, 2));
-        } catch (error:any) {
-          setError('Failed to send request.');
-          setResponse(error.message);
-          console.error(error); // Log the error for debugging
+            const response = await axios.post('/api/sendRequest', { jsonOutput });
+            if (response.data) {
+                setResponse(JSON.stringify(response.data, null, 2));
+            }
+        } catch (error: any) {
+            if (error.response && error.response.data && error.response.data.error) {
+                setResponse(`Error from Pardot: ${error.response.data.error}`);
+            } else if (error.message) {
+                setResponse(`An unexpected error occurred: ${error.message}`);
+            } else {
+                setResponse('Failed to send request. Please try again.');
+            }
+            setError(error.message);
+            console.error("Error log:", error.response?.data?.error || error.message);
         }
-      };      
+    };
+
 
     const handleGetStatus = async () => {
         // Add your logic to get status here
@@ -75,7 +86,7 @@ export default function JsonInputForm() {
 
     return (
         <div className="flex min-h-screen">
-            
+
             {/* JSON Input Form */}
             <div className="opacity-75 bg-center bg-cover bg-no-repeat border border-green-300 border-8 border-l-0 flex-1 p-6 rounded-r-lg shadow-md dark:bg-[url('https://wp.salesforce.com/en-ap/wp-content/uploads/sites/14/2024/02/php-marquee-starter-sm-bg.jpg?w=731')]">
 
@@ -129,7 +140,7 @@ export default function JsonInputForm() {
                             className="w-full text-gray-700 p-2 border border-yellow-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                             id="arguments"
                             name="arguments"
-                            
+
                             value={argumentsJson}
                             onChange={(e) => setArgumentsJson(e.target.value)}
                             placeholder='{"key": "value"}'
@@ -186,11 +197,13 @@ export default function JsonInputForm() {
                         Get All Status
                     </button>
                 </div>
-
                 <div className="mt-4">
                     <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Response</h3>
-                    <pre className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md overflow-x-auto text-sm">{response}</pre>
+                    <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-md overflow-y-auto overflow-x-auto max-h-64">
+                        <pre className="text-sm whitespace-pre-wrap">{response}</pre>
+                    </div>
                 </div>
+
             </div>
         </div>
     );
